@@ -1,0 +1,24 @@
+WITH last_login AS (
+    SELECT
+        user_id,
+        DATE(TO_TIMESTAMP(MAX(last_ts))) AS last_login_date
+    FROM user_sessions
+    GROUP BY user_id
+    HAVING CURRENT_DATE - DATE(TO_TIMESTAMP(MAX(last_ts))) >= 3
+),
+pages_on_last_day AS (
+    SELECT
+        s.user_id,
+        SUM(s.pages) AS pages_last_day
+    FROM user_sessions s
+    JOIN last_login l ON l.user_id = s.user_id
+    WHERE DATE(TO_TIMESTAMP(s.last_ts)) = l.last_login_date
+    GROUP BY s.user_id
+)
+SELECT
+    pages_last_day,
+    COUNT(*)                                            AS users_count,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) AS percentage
+FROM pages_on_last_day
+GROUP BY pages_last_day
+ORDER BY pages_last_day;
