@@ -1,0 +1,16 @@
+WITH user_pages AS (
+    SELECT
+        user_id,
+        source,
+        SUM(pages) AS total_pages
+    FROM user_sessions
+    GROUP BY user_id, source
+)
+SELECT
+    user_id,
+    source,
+    total_pages,
+    ROUND(AVG(total_pages) OVER (PARTITION BY source), 2) AS avg_pages_by_source,
+    ROUND(total_pages - AVG(total_pages) OVER (PARTITION BY source), 2) AS diff_from_avg
+FROM user_pages
+ORDER BY source, user_id;
