@@ -1,0 +1,5 @@
+SELECT
+    COUNT(*) AS total_rows,
+    COUNT(DISTINCT user_id) AS users,
+    COUNT(DISTINCT delivery_id) AS emails
+FROM `testtask-497419.Test_Task.Test_Task`;
