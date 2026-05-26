@@ -1,0 +1,6 @@
+SELECT
+    buyer,
+    COUNT(*) AS emails_sent,
+    COUNT(DISTINCT user_id) AS users
+FROM cleaned_emails
+GROUP BY buyer;
