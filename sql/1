@@ -1,0 +1,25 @@
+WITH first_login AS (
+    SELECT
+        user_id,
+        DATE(TO_TIMESTAMP(MIN(first_ts))) AS registration_date
+    FROM user_sessions
+    GROUP BY user_id
+),
+next_day_login AS (
+    SELECT DISTINCT
+        fl.user_id
+    FROM first_login fl
+    JOIN user_sessions us ON us.user_id = fl.user_id
+    WHERE DATE(TO_TIMESTAMP(us.first_ts)) = fl.registration_date + INTERVAL '1 day'
+)
+SELECT
+    fl.registration_date,
+    COUNT(DISTINCT fl.user_id)                                            AS total_users,
+    COUNT(DISTINCT ndl.user_id)                                           AS retained_users,
+    ROUND(
+        COUNT(DISTINCT ndl.user_id) * 100.0 / COUNT(DISTINCT fl.user_id)
+    , 2)                                                                  AS lt1_retention_pct
+FROM first_login fl
+LEFT JOIN next_day_login ndl ON ndl.user_id = fl.user_id
+GROUP BY fl.registration_date
+ORDER BY fl.registration_date;
