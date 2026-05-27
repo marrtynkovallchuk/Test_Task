@@ -14,11 +14,11 @@ next_day_login AS (
 )
 SELECT
     fl.registration_date,
-    COUNT(DISTINCT fl.user_id)                                            AS total_users,
-    COUNT(DISTINCT ndl.user_id)                                           AS retained_users,
+    COUNT(DISTINCT fl.user_id) AS total_users,
+    COUNT(DISTINCT ndl.user_id) AS retained_users,
     ROUND(
         COUNT(DISTINCT ndl.user_id) * 100.0 / COUNT(DISTINCT fl.user_id)
-    , 2)                                                                  AS lt1_retention_pct
+    , 2)  AS lt1_retention_pct
 FROM first_login fl
 LEFT JOIN next_day_login ndl ON ndl.user_id = fl.user_id
 GROUP BY fl.registration_date
