@@ -17,7 +17,7 @@ pages_on_last_day AS (
 )
 SELECT
     pages_last_day,
-    COUNT(*)                                            AS users_count,
+    COUNT(*) AS users_count,
     ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) AS percentage
 FROM pages_on_last_day
 GROUP BY pages_last_day
