@@ -1,0 +1,36 @@
+WITH base AS ( SELECT
+    user_id,
+    date,
+    buyer,
+    delivery_id,
+    response,
+    rule,
+    group_1, group_2, group_3, group_4,
+
+    CASE WHEN buyer = "Buyer" THEN TRUE ELSE FALSE END AS is_buyer,
+    CASE WHEN read_ts  IS NOT NULL THEN 1 ELSE 0 END   AS is_open,
+    CASE WHEN click_ts IS NOT NULL THEN 1 ELSE 0 END   AS is_click,
+
+    CASE 
+      WHEN CAST(not_free_credits AS FLOAT64) > 0 THEN 1 
+      ELSE 0 
+    END AS is_paid,
+
+    COALESCE(CAST(not_free_credits AS FLOAT64), 0) AS paid_credits,
+    COALESCE(CAST(total_credits AS FLOAT64), 0)    AS total_credits
+
+  FROM `testtask-497419.Test_Task.Test_Task`
+ )
+ 
+SELECT
+  response,
+  COUNT(DISTINCT delivery_id)                              AS deliveries,
+  ROUND(SUM(is_open)  / COUNT(DISTINCT delivery_id) * 100, 2) AS open_rate_pct,
+  ROUND(SUM(is_click) / NULLIF(SUM(is_open),  0)    * 100, 2) AS ctr_pct,
+  ROUND(SUM(is_paid)  / NULLIF(SUM(is_click), 0)    * 100, 2) AS paid_rate_pct,
+  SUM(paid_credits)                                        AS total_paid_credits,
+  ROUND(SUM(paid_credits) / SUM(SUM(paid_credits)) OVER () * 100, 1) AS credits_share_pct
+ 
+FROM base
+GROUP BY response
+ORDER BY total_paid_credits DESC
