@@ -1,6 +1,0 @@
-SELECT
-    buyer,
-    COUNT(*) AS emails_sent,
-    COUNT(DISTINCT user_id) AS users
-FROM `testtask-497419.Test_Task.Test_Task`
-GROUP BY buyer;

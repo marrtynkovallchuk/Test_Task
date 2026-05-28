@@ -1,6 +1,0 @@
-SELECT
-    response,
-    COUNT(*) AS cnt
-FROM `testtask-497419.Test_Task.Test_Task`
-GROUP BY response
-ORDER BY cnt DESC;
